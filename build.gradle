@@ -1,0 +1,22 @@
+// 루트는 묶는 역할만 한다. 실제 빌드 설정은 각 서비스의 build.gradle 에 있다.
+// 서비스를 추가하면 settings.gradle 의 includeBuild 와 아래 목록에 함께 넣는다.
+
+def services = ['order', 'delivery']
+
+tasks.register('assembleAll') {
+    group = 'build'
+    description = '모든 서비스 빌드 (테스트 제외 — jar 까지만)'
+    services.each { dependsOn gradle.includedBuild(it).task(':assemble') }
+}
+
+tasks.register('testAll') {
+    group = 'verification'
+    description = '모든 서비스 테스트. infra 가 떠 있어야 한다 (docker compose up -d)'
+    services.each { dependsOn gradle.includedBuild(it).task(':test') }
+}
+
+tasks.register('cleanAll') {
+    group = 'build'
+    description = '모든 서비스 clean'
+    services.each { dependsOn gradle.includedBuild(it).task(':clean') }
+}
