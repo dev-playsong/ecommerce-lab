@@ -1,0 +1,9 @@
+rootProject.name = 'ecommerce-lab'
+
+// 컴포지트 빌드(includeBuild).
+// 두 서비스는 각자 settings.gradle / gradlew 를 가진 "독립 빌드"로 남는다.
+// 하나의 멀티모듈 프로젝트로 합쳐지는 것이 아니다 — 서비스별 독립 배포라는 전제를 유지한다.
+//
+// 효과: IntelliJ 에서 루트를 열면 두 프로젝트를 자동으로 잡는다. 수동 Link 불필요.
+includeBuild 'services/order'
+includeBuild 'services/delivery'
