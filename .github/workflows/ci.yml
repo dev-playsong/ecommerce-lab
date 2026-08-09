@@ -1,0 +1,38 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [dev, main]
+  push:
+    branches: [dev, main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        service: [order, delivery]
+
+    defaults:
+      run:
+        working-directory: services/${{ matrix.service }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: gradle
+
+      - name: gradlew 실행 권한
+        run: chmod +x ./gradlew
+
+      # TODO: 지금은 테스트를 건너뛴다.
+      # Initializr가 만든 contextLoads 테스트가 @SpringBootTest 라서
+      # MySQL / Kafka 없이는 컨텍스트 기동에 실패한다.
+      # Testcontainers 도입 후 -x test 를 제거할 것. → ADR 0007
+      - name: 빌드
+        run: ./gradlew build -x test --no-daemon
