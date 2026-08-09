@@ -19,6 +19,18 @@ die()  { printf '%s✗%s %s\n' "$RED" "$OFF" "$1" >&2; exit 1; }
 
 current_branch() { git rev-parse --abbrev-ref HEAD; }
 
+# git pull 대신 명시적으로 origin/<브랜치> 로 fast-forward.
+# pull 은 FETCH_HEAD 를 거치면서 머지 대상이 모호해질 때가 있다
+# ("Cannot fast-forward to multiple branches"). 이 형태는 그 여지가 없다.
+sync() {
+  local b=$1
+  git switch "$b" -q
+  if git rev-parse --verify -q "origin/$b" >/dev/null; then
+    git merge --ff-only "origin/$b" -q \
+      || die "$b 가 origin/$b 와 갈라졌습니다. 수동으로 정리하세요."
+  fi
+}
+
 require_clean() {
   if [ -n "$(git status --porcelain)" ]; then
     git -c core.quotepath=false status --short
@@ -50,7 +62,8 @@ cmd_new() {
   require_clean
 
   info "dev 최신화"
-  git switch dev -q && git pull --ff-only -q
+  git fetch origin -q
+  sync dev
 
   local branch="feature/$name"
   git switch -c "$branch" -q
@@ -68,7 +81,7 @@ cmd_ship() {
 
   info "dev 최신화"
   git fetch origin -q
-  git switch dev -q && git pull --ff-only -q
+  sync dev
   git switch "$branch" -q
 
   # dev 가 앞서 있으면 먼저 합쳐서 충돌을 여기서 해결한다
@@ -100,8 +113,8 @@ cmd_release() {
   require_clean
   info "최신화"
   git fetch origin -q
-  git switch dev -q && git pull --ff-only -q
-  git switch main -q && git pull --ff-only -q
+  sync dev
+  sync main
 
   if git merge-base --is-ancestor dev main; then
     warn "main 이 이미 dev 를 포함합니다. 올릴 게 없습니다."
