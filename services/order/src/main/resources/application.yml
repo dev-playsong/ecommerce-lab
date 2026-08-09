@@ -1,0 +1,45 @@
+server:
+  port: 8081
+
+spring:
+  application:
+    name: order
+
+  datasource:
+    url: jdbc:mysql://localhost:3306/order_db?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+    username: root
+    password: root
+    hikari:
+      # 컨커런시 실험 때 여기를 줄였다 늘렸다 한다
+      maximum-pool-size: 10
+
+  jpa:
+    hibernate:
+      ddl-auto: update      # 학습용. 스키마가 굳으면 flyway로 교체
+    properties:
+      hibernate:
+        format_sql: true
+    open-in-view: false     # OSIV 끔 — 트랜잭션 경계를 명확히
+
+  kafka:
+    bootstrap-servers: localhost:9092
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+      acks: all
+    consumer:
+      group-id: order
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+
+logging:
+  level:
+    org.hibernate.SQL: debug
+    org.springframework.kafka: info
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,metrics

@@ -1,0 +1,50 @@
+server:
+  port: 8082
+
+spring:
+  application:
+    name: delivery
+
+  datasource:
+    url: jdbc:mysql://localhost:3306/delivery_db?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+    username: root
+    password: root
+    hikari:
+      # 실험 2(커넥션 풀 병목)에서 이 값을 3까지 줄여본다
+      maximum-pool-size: 10
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        format_sql: true
+    open-in-view: false
+
+  kafka:
+    bootstrap-servers: localhost:9092
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+      acks: all
+    consumer:
+      group-id: delivery
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      # 실험 3에서 이 값들을 조정한다
+      max-poll-records: 500
+    listener:
+      # 실험 1에서 1 → 3 → 6 → 12 로 바꿔가며 측정
+      concurrency: 1
+
+logging:
+  level:
+    org.hibernate.SQL: debug
+    org.springframework.kafka: info
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,metrics
