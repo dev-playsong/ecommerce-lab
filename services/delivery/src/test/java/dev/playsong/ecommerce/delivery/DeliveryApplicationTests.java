@@ -1,4 +1,4 @@
-package dev.playsong.delivery;
+package dev.playsong.ecommerce.delivery;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

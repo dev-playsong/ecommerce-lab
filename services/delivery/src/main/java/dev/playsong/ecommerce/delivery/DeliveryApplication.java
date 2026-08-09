@@ -1,13 +1,13 @@
-package dev.playsong.order;
+package dev.playsong.ecommerce.delivery;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class OrderApplication {
+public class DeliveryApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(OrderApplication.class, args);
+		SpringApplication.run(DeliveryApplication.class, args);
 	}
 
 }
