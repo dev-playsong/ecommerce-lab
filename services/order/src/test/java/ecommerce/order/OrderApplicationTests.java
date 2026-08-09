@@ -1,10 +1,10 @@
-package dev.playsong.ecommerce.delivery;
+package ecommerce.order;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class DeliveryApplicationTests {
+class OrderApplicationTests {
 
 	@Test
 	void contextLoads() {
